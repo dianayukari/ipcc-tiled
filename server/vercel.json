@@ -1,0 +1,14 @@
+{
+  "functions": {
+    "api/transform.js": {
+      "maxDuration": 30
+    }
+  },
+  "routes": [
+    {
+      "src": "/api/transform",
+      "methods": ["POST"],
+      "dest": "/api/transform.js"
+    }
+  ]
+}
