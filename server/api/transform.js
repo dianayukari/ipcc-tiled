@@ -4,6 +4,15 @@ const openai = new OpenAI({ apiKey: process.env.OPEN_API_KEY })
 
 export default async function handler(req,res) {
 
+    res.setHeader("Access-Control-Allow-Origin", "*");
+    res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
+    res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+
+    if (req.method === "OPTIONS") {
+        return res.status(200).end();
+    }
+
+
     if (req.method != 'POST') {
         return res.status(405).json({ 
             error: 'Method not allowed. Use POST.'
@@ -125,14 +134,25 @@ export default async function handler(req,res) {
 
                     Output format (STRICT)
                     Respond with ONLY valid JSON.
-                    No explanations, no markdown, no extra text.                    
+                    Do not include any explanation, comments, or markdown.
+                    Do not omit any field.
+
+                    The JSON object MUST have exactly these keys:
+                    "sentence" (string),
+                    "actor" (one of: "NGO", "ministry", "lobby", "media", "government", "industry"),
+                    "abc" (string, valid ABC notation),
+                    "key" (string, e.g. "D", "Dm", "F"),
+                    "tempo" (integer between 40 and 180),
+                    "range" (string, describing approximate pitch range).
+
+                    Example of the structure (example values, not to be reused):
                     {
                         "sentence": "transformed sentence",
-                        "actor": "NGO | ministry | lobby | media | government | industry",
+                        "actor": "NGO",
                         "abc": "ABC notation string",
-                        "key": "D | Dm | F",
-                        "tempo": "60–120",
-                        "range": "DA | CD | AA"
+                        "key": "Dm",
+                        "tempo": 80,
+                        "range": "C3–A4"
                     }
 
                     Final instruction:

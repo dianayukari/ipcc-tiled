@@ -8,7 +8,7 @@ export const abc_original = writable(
 	'|:D2 D2 D4|F2 F2 F4|A2 A2 A4|G2 G2 G4|A2 A2 A4|F2 F2 F4|D2 D2 D4|C4 C4:|'
 );
 
-export const currentSentene = writable('');
+export const currentSentence = writable('');
 export const transformations = writable([]); 
 export const actorGuess = writable('');
 export const isComparing = writable(false);
