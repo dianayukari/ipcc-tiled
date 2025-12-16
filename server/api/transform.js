@@ -143,7 +143,7 @@ export default async function handler(req,res) {
           ],
           temperature: 0.3,
           top_p: 0.85,
-          max_completion_tokens: 180,
+          max_completion_tokens: 1000,
         });
 
         const content = completion.choices[0]?.message?.content;
