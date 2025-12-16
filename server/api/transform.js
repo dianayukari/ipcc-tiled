@@ -162,6 +162,9 @@ export default async function handler(req,res) {
             success: true,
             sentence: result.sentence,
             abc: result.abc,
+            key: result.key,
+            tempo: result.tempo,
+            range: result.range,
             actor: result.actor
         });
 
