@@ -11,11 +11,11 @@ export default async function handler(req,res) {
     }
 
     try {
-        const { text, feature, patternStatus } = req.body;
+        const { text, feature, patternStatus, abc_original } = req.body;
 
         if (!text || !feature) {
             return res.status(400).json({
-                error: "Missing text or type"
+                error: "Missing text or feature"
             });
         }
 
@@ -63,37 +63,87 @@ export default async function handler(req,res) {
         }[patternStatus || 'maintained']
 
         const completion = await openai.chat.completions.create({
-            model: 'gpt-5.1-mini',
-            messages: [
-                {
-                    role: 'user',
-                    content:`
-                    You are performing an intralingual translation of an IPCC statement.
-
-                    Follow the instructions exactly.
-                    Preserve meaning, scope, and factual content.
-                    Output only the transformed sentence.
-                    The result should sound like a sentence that might be used by a specific actor (NGO, ministry, lobby, etc.).
+          model: "gpt-4o-mini",
+          messages: [
+            {
+              role: "user",
+              content: `
+                    You are performing a controlled intralingual translation of an IPCC statement and generating a short melody that reflects the linguistic transformation.
+                    
+                    Core constraints:
+                    Preserve meaning, scope, referents, and factual content of the original statement.
+                    Change only the specified linguistic feature.
+                    Do not introduce new claims, actors, or evaluative framing beyond what the feature requires.
+                    The output sentence must plausibly be uttered by a single, identifiable actor type (e.g. NGO, ministry, lobby).
 
                     Original statement: 
                     "${text}"
 
-                    Feature to change: ${feature}
+                    Original melody (ABC notation):
+                    "${abc_original}"
+
+                    Linguistic feature to transform: ${feature}
                     Feature instruction: ${featureExplanation}
 
-                    Pattern status: ${patternStatus || 'maintained'}
+                    Pattern status: ${patternStatus || "maintained"}
                     Pattern instruction: ${patternInstruction}
 
-                    Produce the transformed sentence.
+                    Transformation rules:
+                    Apply the feature instruction systematically, not stylistically.
+                    If pattern status is "maintained", keep syntactic rhythm and clause structure as close as possible.
+                    If pattern status is "changed", modify structure only as required by the feature.
 
-                    Respond with ONLY valid JSON (no explanations, no extra text), exactly in this format:
-                    {"sentence": "transformed sentence", "actor": "NGO|ministry|lobby|media|government|industry"}
-                    `.trim()
-                }
-            ],
-            temperature: 0.3,
-            top_p: 0.85,
-            max_tokens: 180
+                    Melody transformation rules:
+                    Use the original ABC notation as the melodic base.
+                    Preserve overall phrase length and bar structure unless the feature requires change.
+                    Modify ONLY the parameters implied by the linguistic feature:
+                    - pitch range
+                    - harmonic density
+                    - key
+                    - tempo
+                    Do not introduce new motifs unrelated to the original melody.
+                    Apply musical changes ONLY for the specified linguistic feature (${feature}); all other parameters should remain as close as possible to the original.
+                    The generated ABC notation must be syntactically valid and playable.
+                    Do not change meter or time signature unless strictly required by the feature.
+                    The values for key, tempo, and range must correspond to the generated ABC notation.
+
+                    Musical parameters (relative to the original melody):
+
+                    Vocabulary: 
+                    Decreased nominalization / more concrete nouns → expand pitch range
+                    Increased nominalization / more abstract nouns → reduce pitch range
+
+                    Transitivity:
+                    More active voice / clearer agency → increase harmonic density
+                    More passive voice / obscured agency → reduce harmonic density
+
+                    Modality:
+                    Increased certainty or obligation → shift toward major key and faster tempo
+                    Increased uncertainty or hedging → shift toward minor key and slower tempo
+
+                    The melody must be internally consistent with the linguistic change.
+
+                    Output format (STRICT)
+                    Respond with ONLY valid JSON.
+                    No explanations, no markdown, no extra text.                    
+                    {
+                        "sentence": "transformed sentence",
+                        "actor": "NGO | ministry | lobby | media | government | industry",
+                        "abc": "ABC notation string",
+                        "key": "D | Dm | F",
+                        "tempo": "60–120",
+                        "range": "DA | CD | AA"
+                    }
+
+                    Final instruction:
+                    Produce one transformed sentence and one melody that together reflect the specified linguistic feature.
+
+                    `.trim(),
+            },
+          ],
+          temperature: 0.3,
+          top_p: 0.85,
+          max_completion_tokens: 180,
         });
 
         const content = completion.choices[0]?.message?.content;
@@ -109,8 +159,9 @@ export default async function handler(req,res) {
         }
 
         return res.status(200).json({
-            success:true,
+            success: true,
             sentence: result.sentence,
+            abc: result.abc,
             actor: result.actor
         });
 
