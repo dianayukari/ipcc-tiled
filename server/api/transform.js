@@ -20,7 +20,7 @@ export default async function handler(req,res) {
     }
 
     try {
-        const { text, feature, patternStatus, abc_original } = req.body;
+        const { text, feature, patternStatus } = req.body;
 
         if (!text || !feature) {
             return res.status(400).json({
@@ -77,86 +77,81 @@ export default async function handler(req,res) {
             {
               role: "user",
               content: `
-                    You are performing a controlled intralingual translation of an IPCC statement and generating a short melody that reflects the linguistic transformation.
-                    
-                    Core constraints:
-                    Preserve meaning, scope, referents, and factual content of the original statement.
-                    Change only the specified linguistic feature.
-                    Do not introduce new claims, actors, or evaluative framing beyond what the feature requires.
-                    The output sentence must plausibly be uttered by a single, identifiable actor type (e.g. NGO, ministry, lobby).
+                    You are performing a controlled intralingual translation of an IPCC statement and deriving visual parameters for a Perlin noise–based generative composition.
 
-                    Original statement: 
+                    CORE CONSTRAINTS (MUST ALL BE SATISFIED)
+                    - Preserve the original statement’s meaning, scope, referents, timeframe, and factual content.
+                    - Modify ONLY the specified linguistic feature; all other linguistic dimensions must remain unchanged unless structurally required.
+                    - Do NOT introduce new claims, causal relations, actors, evaluations, or normative language.
+                    - The transformed sentence must plausibly be attributable to a single, identifiable institutional actor type.
+
+                    ORIGINAL STATEMENT
                     "${text}"
 
-                    Original melody (ABC notation):
-                    "${abc_original}"
+                    LINGUISTIC TRANSFORMATION
+                    - Feature to transform: ${feature}
+                    - Feature instruction: ${featureExplanation}
 
-                    Linguistic feature to transform: ${feature}
-                    Feature instruction: ${featureExplanation}
+                    PATTERN CONTROL
+                    - Pattern status: ${patternStatus || "maintained"}
+                    - Pattern instruction: ${patternInstruction}
 
-                    Pattern status: ${patternStatus || "maintained"}
-                    Pattern instruction: ${patternInstruction}
+                    TRANSFORMATION RULES
+                    - Apply the feature instruction systematically and consistently across the sentence.
+                    - Do NOT apply stylistic variation beyond what the feature requires.
+                    - If pattern status is "maintained":
+                    - Preserve clause order, syntactic rhythm, and sentence length as closely as possible.
+                    - If pattern status is "changed":
+                    - Modify structure only to the minimum extent required by the linguistic feature.
+                    - If a conflict arises between meaning preservation and feature application, prioritize meaning preservation.
 
-                    Transformation rules:
-                    Apply the feature instruction systematically, not stylistically.
-                    If pattern status is "maintained", keep syntactic rhythm and clause structure as close as possible.
-                    If pattern status is "changed", modify structure only as required by the feature.
+                    VISUAL PARAMETER MAPPING (Perlin Noise Composition)
 
-                    Melody transformation rules:
-                    Use the original ABC notation as the melodic base.
-                    Preserve overall phrase length and bar structure unless the feature requires change.
-                    Modify ONLY the parameters implied by the linguistic feature:
-                    - pitch range
-                    - harmonic density
-                    - key
-                    - tempo
-                    Do not introduce new motifs unrelated to the original melody.
-                    Apply musical changes ONLY for the specified linguistic feature (${feature}); all other parameters should remain as close as possible to the original.
-                    The generated ABC notation must be syntactically valid and playable.
-                    Do not change meter or time signature unless strictly required by the feature.
-                    The values for key, tempo, and range must correspond to the generated ABC notation.
+                    VOCABULARY → segments (0.5–4.0)
+                    - Simple / concrete vocabulary → 0.5–1.5 (sparse, direct curves)
+                    - Complex / abstract vocabulary → 2.0–4.0 (dense, intricate curves)
 
-                    Musical parameters (relative to the original melody):
+                    MODALITY → hue (0–360)
+                    - High certainty / factual modality → 180–240 (cool blues, stable)
+                    - Low certainty / hedging modality → 20–60 (warm oranges, volatile)
 
-                    Vocabulary: 
-                    Decreased nominalization / more concrete nouns → expand pitch range
-                    Increased nominalization / more abstract nouns → reduce pitch range
+                    TRANSITIVITY → speed (0.001–0.02)
+                    - Low transitivity / simple processes → 0.001–0.008 (slow, deliberate)
+                    - High transitivity / multi-step or agentive processes → 0.010–0.020 (fast, cascading)
 
-                    Transitivity:
-                    More active voice / clearer agency → increase harmonic density
-                    More passive voice / obscured agency → reduce harmonic density
+                    PATTERN STATUS → noiseScale (0.01–0.10)
+                    - maintained → 0.01 (fine detail, controlled variation)
+                    - changed → 0.05 (amplified distortion, moderate chaos)
+                    - omitted → 0.10 (coarse, near-random fluctuations)
 
-                    Modality:
-                    Increased certainty or obligation → shift toward major key and faster tempo
-                    Increased uncertainty or hedging → shift toward minor key and slower tempo
+                    OUTPUT FORMAT (STRICT)
+                    - Respond with ONLY valid JSON.
+                    - Do NOT include explanations, comments, or formatting outside JSON.
+                    - The JSON object MUST contain exactly the following keys:
 
-                    The melody must be internally consistent with the linguistic change.
+                    "text"        : string (single transformed sentence)
+                    "actorGuess"  : one of ["NGO", "ministry", "lobby", "media", "government", "industry"]
+                    "segments"    : number (0.5–4.0, one decimal place)
+                    "hue"         : integer (0–360)
+                    "speed"       : number (0.001–0.02, three decimal places)
+                    "noiseScale"  : number (0.01–0.10, two decimal places)
 
-                    Output format (STRICT)
-                    Respond with ONLY valid JSON.
-                    Do not include any explanation, comments, or markdown.
-                    Do not omit any field.
+                    ACTOR GUESS RULE
+                    - Infer the most plausible actor type based solely on linguistic cues (register, modality, agency).
+                    - Do NOT invent contextual information beyond the sentence itself.
 
-                    The JSON object MUST have exactly these keys:
-                    "sentence" (string),
-                    "actor" (one of: "NGO", "ministry", "lobby", "media", "government", "industry"),
-                    "abc" (string, valid ABC notation),
-                    "key" (string, e.g. "D", "Dm", "F"),
-                    "tempo" (integer between 40 and 180),
-                    "range" (string, describing approximate pitch range).
-
-                    Example of the structure (example values, not to be reused):
+                    EXAMPLE OUTPUT
                     {
-                        "sentence": "transformed sentence",
-                        "actor": "NGO",
-                        "abc": "ABC notation string",
-                        "key": "Dm",
-                        "tempo": 80,
-                        "range": "C3–A4"
+                    "text": "transformed sentence here",
+                    "actorGuess": "NGO",
+                    "segments": 2.3,
+                    "hue": 220,
+                    "speed": 0.012,
+                    "noiseScale": 0.05
                     }
 
-                    Final instruction:
-                    Produce one transformed sentence and one melody that together reflect the specified linguistic feature.
+                    FINAL INSTRUCTION
+                    Produce exactly one transformed sentence and its corresponding visual parameters, ensuring the parameters systematically reflect the linguistic transformation applied.
 
                     `.trim(),
             },
