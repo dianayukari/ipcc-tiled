@@ -22,6 +22,8 @@ export default async function handler(req,res) {
     try {
         const { text, feature, patternStatus } = req.body;
 
+        const VERSION = 2.7
+
         if (!text || !feature) {
             return res.status(400).json({
                 error: "Missing text or feature"
@@ -40,36 +42,29 @@ export default async function handler(req,res) {
 
         const featureExplanation = {
             vocab: `Rephrase the sentence by changing lexical choices (nouns, verbs, adjectives, and expressions) while preserving the original meaning, scope, and factual content.
-            Use synonyms or near-synonyms where possible.
-            Avoid repeating the same key words and phrasing from the original sentence.
-            Do not add, remove, or reinterpret information.
-            Do not simplify the sentence or change its technical register unless required by the pattern.`,
+            Avoid repeating the same key words and phrasing from the original sentence.`,
             modality: `Apply a modality transformation.
             Rephrase the sentence by changing how certainty, probability, or expectation is expressed linguistically.
-            Use different modal verbs, adverbs, or constructions (e.g. implicit vs explicit modality).
-            Preserve the underlying claim, time frame, and direction of effects.
-            Do not alter factual content.`,
+            Use different modal verbs, adverbs, or constructions (e.g. implicit vs explicit modality).`,
             transitivity: `Apply a transitivity transformation.
             Rephrase the sentence by changing grammatical agency, voice, or process structure.
-            You may shift between active and passive voice, foreground or background agents, or replace actions with nominalized processes.
-            Do not introduce new agents or remove existing ones.
-            Do not change the meaning of the event or process described.`
+            You may shift between active and passive voice, foreground or background agents, or replace actions with nominalized processes.`
         }[feature];
 
         const patternInstruction = {
-            maintained: `Maintain IPCC calibrated language.
+          maintained: `Maintain IPCC calibrated language  (e.g. "likely", "very likely", "high confidence").
             Preserve all IPCC likelihood and confidence expressions exactly as written (e.g. "likely", "very likely", "high confidence").
             Do not paraphrase, reinterpret, weaken, or strengthen these expressions.
             Ensure they appear in the transformed sentence in the same semantic role.`,
-            omitted: `Omit IPCC calibrated language.
+          omitted: `Omit IPCC calibrated language  (e.g. "likely", "very likely", "high confidence").
             Remove all explicit IPCC likelihood and confidence expressions from the sentence.
             Do not replace them with alternative probability or uncertainty terms.
             Ensure the remaining sentence is grammatically complete and preserves the core claim`,
-            changed: `Change IPCC calibrated language.
+          changed: `Change IPCC calibrated language  (e.g. "likely", "very likely", "high confidence").
             Replace IPCC likelihood and confidence expressions with non-standard, qualitative uncertainty formulations.
             Preserve the approximate strength of certainty without using IPCC-calibrated terms.
-            Do not remove uncertainty entirely and do not intensify or weaken the claim.`
-        }[patternStatus || 'maintained']
+            Do not remove uncertainty entirely and do not intensify or weaken the claim.`,
+        }[patternStatus || "maintained"];
 
         const completion = await openai.chat.completions.create({
           model: "gpt-4o-mini",
@@ -77,12 +72,14 @@ export default async function handler(req,res) {
             {
               role: "user",
               content: `
-                    You are performing an intralingual translation of an IPCC statement and deriving visual parameters for a Perlin noise–based generative composition.
+                    You are performing a translation of an IPCC statement to a policy document statement, and deriving visual parameters for a Perlin noise–based generative composition.
 
                     CORE CONSTRAINTS (MUST ALL BE SATISFIED)
                     - Modify ONLY the specified linguistic feature; all other linguistic dimensions must remain unchanged unless structurally required.
                     - The transformed sentence must plausibly be attributable to a single, identifiable institutional actor type.
                     - The transformation must be from original statement (IPCC report) to policy language, as if it was a document elaborated for politicians to understand and act upon
+                    - Imagine a politician from either right wing or left wing government is making this translation and include its bias and self interest.
+                    - Each change must be relevant, make BOLD changes in the features to transform.
 
                     ORIGINAL STATEMENT
                     "${text}"
@@ -99,7 +96,7 @@ export default async function handler(req,res) {
                     - Apply the feature instruction systematically and consistently across the sentence.
                     - If pattern status is "maintained":
                         Preserve the specific calibrated expressions (e.g. 'likely')
-                    - Feel free to add new actors, contexts, transformations as you feel like needed to convey meaning to the sentence
+                    - Feel free to add new actors, contexts, transformations as you feel like needed to convey meaning the politician is interested in
 
                     VISUAL PARAMETER MAPPING (Perlin Noise Composition)
 
@@ -120,8 +117,10 @@ export default async function handler(req,res) {
                     - changed → 0.05 (amplified distortion, moderate chaos)
                     - omitted → 0.10 (coarse, near-random fluctuations)
 
+
                     OUTPUT FORMAT (STRICT)
                     - Respond with ONLY valid JSON.
+                    - this is not markdown, don't add bold, italic or any other formatting.
                     - Do NOT include explanations, comments, or formatting outside JSON.
                     - The JSON object MUST contain exactly the following keys:
 
@@ -137,7 +136,7 @@ export default async function handler(req,res) {
 
                     EXAMPLE OUTPUT
                     {
-                    "text": "transformed sentence here",
+                    "text": "transformed sentence here. this is not markdown, don't add formatting",
                     "actorGuess": "NGO",
                     "segments": 2.3,
                     "hue": 220,
@@ -147,6 +146,7 @@ export default async function handler(req,res) {
 
                     FINAL INSTRUCTION
                     Produce exactly one transformed sentence and its corresponding visual parameters, ensuring the parameters systematically reflect the linguistic transformation applied.
+                    "text" is not markdown, don't add bold, italic or any other formatting.
 
                     `.trim(),
             },
@@ -169,12 +169,13 @@ export default async function handler(req,res) {
         }
 
         return res.status(200).json({
-          text: result.text,
-          actorGuess: result.actorGuess,
-          segments: result.segments,
-          hue: result.hue,
-          speed: result.speed,
-          noiseScale: result.noiseScale,
+            version: VERSION,
+            text: result.text,
+            actorGuess: result.actorGuess,
+            segments: result.segments,
+            hue: result.hue,
+            speed: result.speed,
+            noiseScale: result.noiseScale,
         });
 
 

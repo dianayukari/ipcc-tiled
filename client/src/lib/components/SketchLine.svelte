@@ -9,20 +9,18 @@
     let container;
     let p5Instance;
 
-
     onMount(async () => {
         const p5Module = await import('p5');
         const p5 = p5Module.default || p5Module;
 
-
         p5Instance = new p5((p) => {
             let t = 0;
 
-
             p.setup = () => {
-                const w = container.clientWidth || 600;
-                const h = container.clientHeight || 600;
-                p.createCanvas(w, h);
+                const containerWidth = container.clientWidth || 600;
+                const canvasSize = Math.min(containerWidth, 600);
+
+                p.createCanvas(canvasSize, canvasSize);
                 p.background(255);
                 p.noFill();
             };
@@ -31,6 +29,7 @@
             p.draw = () => {
                 const vp = $visualParams;
                 const trigger = $motionTrigger
+
 
                 if (trigger !== lastTrigger) {
                     lastTrigger = trigger;
@@ -76,9 +75,9 @@
 
 
             p.windowResized = () => {
-                const w = container.clientWidth || 600;
-                const h = container.clientHeight || 600;
-                p.resizeCanvas(w, h);
+                const containerWidth = container.clientWidth || 600;
+                const canvasSize = Math.min(containerWidth, 600);
+                p.resizeCanvas(canvasSize, canvasSize);
                 p.background(255);
             };
         }, container);
@@ -91,8 +90,24 @@
 </script>
 
 
-<div
-    class="sketch-container"
+<div class="sketch-container"
     bind:this={container}
-    style="width: 100%; height: 80vh;"
-></div>
+>
+</div>
+
+<style>
+
+    .sketch-container {
+        width: 100%;
+        max-width: 600px;
+        aspect-ratio: 1;
+        margin: 0 auto;
+        position: relative;
+    }
+
+    :global(.p5Canvas) {
+        display: block !important;
+    }
+
+
+</style>

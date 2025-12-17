@@ -20,4 +20,5 @@ export const patternStatus = writable('maintained')
 export const showTextOverlay = writable(false)
 export const overlaySentence = writable('')
 export const motionTrigger = writable(0);
-
+export const visualLog = writable([])
+export const version = writable('')
