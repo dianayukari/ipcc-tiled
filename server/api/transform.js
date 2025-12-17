@@ -80,9 +80,7 @@ export default async function handler(req,res) {
                     You are performing a controlled intralingual translation of an IPCC statement and deriving visual parameters for a Perlin noise–based generative composition.
 
                     CORE CONSTRAINTS (MUST ALL BE SATISFIED)
-                    - Preserve the original statement’s meaning, scope, referents, timeframe, and factual content.
                     - Modify ONLY the specified linguistic feature; all other linguistic dimensions must remain unchanged unless structurally required.
-                    - Do NOT introduce new claims, causal relations, actors, evaluations, or normative language.
                     - The transformed sentence must plausibly be attributable to a single, identifiable institutional actor type.
 
                     ORIGINAL STATEMENT
@@ -100,10 +98,9 @@ export default async function handler(req,res) {
                     - Apply the feature instruction systematically and consistently across the sentence.
                     - Do NOT apply stylistic variation beyond what the feature requires.
                     - If pattern status is "maintained":
-                    - Preserve clause order, syntactic rhythm, and sentence length as closely as possible.
+                        Preserve clause order, syntactic rhythm, and sentence length as closely as possible.
                     - If pattern status is "changed":
-                    - Modify structure only to the minimum extent required by the linguistic feature.
-                    - If a conflict arises between meaning preservation and feature application, prioritize meaning preservation.
+                        Modify structure only to the minimum extent required by the linguistic feature.
 
                     VISUAL PARAMETER MAPPING (Perlin Noise Composition)
 
@@ -138,7 +135,6 @@ export default async function handler(req,res) {
 
                     ACTOR GUESS RULE
                     - Infer the most plausible actor type based solely on linguistic cues (register, modality, agency).
-                    - Do NOT invent contextual information beyond the sentence itself.
 
                     EXAMPLE OUTPUT
                     {
@@ -174,13 +170,12 @@ export default async function handler(req,res) {
         }
 
         return res.status(200).json({
-            success: true,
-            sentence: result.sentence,
-            abc: result.abc,
-            key: result.key,
-            tempo: result.tempo,
-            range: result.range,
-            actor: result.actor
+          text: result.text,
+          actorGuess: result.actorGuess,
+          segments: result.segments,
+          hue: result.hue,
+          speed: result.speed,
+          noiseScale: result.noiseScale,
         });
 
 

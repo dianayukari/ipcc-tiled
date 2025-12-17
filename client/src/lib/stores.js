@@ -1,12 +1,14 @@
 import { writable } from "svelte/store";
 
 export const originalSentence = writable(
-    'Individual livelihoods have been affected through, for example, destruction of homes and infrastructure, and loss of property and income, human health and food security, with adverse effects on gender and social equity. (high confidence)'
+    'Human influence has likely increased the chance of compound extreme events since the 1950s'
 );
 
-export const abc_original = writable(
-	'X:1\nT:Climate Livelihood (Statement A)\nM:4/4\nL:1/8\nK:Dm\nQ:1/4=90\n|:D2 D2 D4|F2 F2 F4|A2 A2 A4|G2 G2 G4|A2 A2 A4|F2 F2 F4|D2 D2 D4|C4 C4:|'
-);
+export const visualParams = writable({ 
+    segments: 0.5, 
+    hue: 200, 
+    speed: 0.05, 
+    noiseScale: 0.01 });
 
 export const currentSentence = writable('');
 export const transformations = writable([]); 
@@ -17,4 +19,5 @@ export const error = writable('');
 export const patternStatus = writable('maintained')
 export const showTextOverlay = writable(false)
 export const overlaySentence = writable('')
+export const motionTrigger = writable(0);
 
