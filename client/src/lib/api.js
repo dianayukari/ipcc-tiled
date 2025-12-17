@@ -1,4 +1,4 @@
-const API_URL = 'http://ipcc-tiled-m52wuoa2k-dianas-projects-55ea9504.vercel.app/api/transform';
+const API_URL = 'https://ipcc-tiled-e4px65vbk-dianas-projects-55ea9504.vercel.app/api/transform';
 
 /**
  * Calls the Vercel serverless function to transform the sentence.

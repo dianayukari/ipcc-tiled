@@ -77,11 +77,12 @@ export default async function handler(req,res) {
             {
               role: "user",
               content: `
-                    You are performing a controlled intralingual translation of an IPCC statement and deriving visual parameters for a Perlin noise–based generative composition.
+                    You are performing an intralingual translation of an IPCC statement and deriving visual parameters for a Perlin noise–based generative composition.
 
                     CORE CONSTRAINTS (MUST ALL BE SATISFIED)
                     - Modify ONLY the specified linguistic feature; all other linguistic dimensions must remain unchanged unless structurally required.
                     - The transformed sentence must plausibly be attributable to a single, identifiable institutional actor type.
+                    - The transformation must be from original statement (IPCC report) to policy language, as if it was a document elaborated for politicians to understand and act upon
 
                     ORIGINAL STATEMENT
                     "${text}"
@@ -96,11 +97,9 @@ export default async function handler(req,res) {
 
                     TRANSFORMATION RULES
                     - Apply the feature instruction systematically and consistently across the sentence.
-                    - Do NOT apply stylistic variation beyond what the feature requires.
                     - If pattern status is "maintained":
-                        Preserve clause order, syntactic rhythm, and sentence length as closely as possible.
-                    - If pattern status is "changed":
-                        Modify structure only to the minimum extent required by the linguistic feature.
+                        Preserve the specific calibrated expressions (e.g. 'likely')
+                    - Feel free to add new actors, contexts, transformations as you feel like needed to convey meaning to the sentence
 
                     VISUAL PARAMETER MAPPING (Perlin Noise Composition)
 

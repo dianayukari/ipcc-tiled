@@ -7,9 +7,7 @@
         loading,
         actorGuess,
         visualParams,
-
 		motionTrigger
-
     } from '$lib/stores'
     import { transformSentence } from '$lib/api';
 
@@ -19,7 +17,7 @@
 
         try { 
             const result = await transformSentence(
-                $currentSentence || $originalSentence,
+                $currentSentence ? $currentSentence : $originalSentence,
                 feature,
                 $patternStatus
             );
