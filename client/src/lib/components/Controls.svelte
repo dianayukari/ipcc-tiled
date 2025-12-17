@@ -162,7 +162,7 @@
         border: none;
         cursor: pointer;
         border-radius: 8px;
-        width: 110px;
+        width: 100px;
         height: 35px;
         transition: 0.3s;
         margin: 10px 3px 10px 3px;

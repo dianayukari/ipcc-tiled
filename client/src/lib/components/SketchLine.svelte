@@ -78,7 +78,6 @@
                 const containerWidth = container.clientWidth || 600;
                 const canvasSize = Math.min(containerWidth, 600);
                 p.resizeCanvas(canvasSize, canvasSize);
-                p.background(255);
             };
         }, container);
 
